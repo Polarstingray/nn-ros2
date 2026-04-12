@@ -1,0 +1,28 @@
+First Setup
+apt install python3-pip, python3-venv
+Install dependencies to a venv w/ access to system ROS2
+cd nn_ws
+python3 -m venv --system-site-packages ./torch_venv
+source torch_venv/bin/activate
+touch ./torch_venv/COLCON_IGNORE
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+Copy resnet50_model.pth to resource folder of nn_controller
+
+
+If no bot:
+pkill -9 ruby
+
+
+Building:
+cd nn_ws
+colcon build --packages-select nn_controller
+//colcon build --symlink-install --packages-select nn_controller
+
+Running:
+cd nn_ws
+source torch_env/bin/activate
+export PYTHONPATH='./torch_venv/lib/python3.12/site-packages'
+//export TURTLEBOT3_MODEL=burger (done in launch code)
+//source install/local_setup.bash (use setup.bash below instead)
+source install/setup.bash
+ros2 launch nn_controller nn_bot_launch.py
