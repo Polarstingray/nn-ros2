@@ -1,28 +1,51 @@
-First Setup
-apt install python3-pip, python3-venv
+# First Setup
+
+apt install python3-pip, python3-venv xterm
 Install dependencies to a venv w/ access to system ROS2
 cd nn_ws
 python3 -m venv --system-site-packages ./torch_venv
 source torch_venv/bin/activate
 touch ./torch_venv/COLCON_IGNORE
-pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-Copy resnet50_model.pth to resource folder of nn_controller
+pip3 install torch torchvision "numpy<2" --extra-index-url https://download.pytorch.org/whl/cpu
 
+# Copy resnet50_model.pth to resource folder of nn_controller
 
-If no bot:
+# If no bot:
 pkill -9 ruby
 
-
-Building:
-cd nn_ws
+# Building:
+cd nn_ws    # github repo is NN-ROS2
 colcon build --packages-select nn_controller
-//colcon build --symlink-install --packages-select nn_controller
+# colcon build --symlink-install --packages-select nn_controller
 
-Running:
+# ================================================================================================
+# Data Collection
+
+# control robot with teleop, movements are recorded in ~/nn_data/labels.csv (NNNNNN.png, linear_x, angular_z)
+export DISPLAY=:0       # uses 1st display
+
+colcon build --packages-select nn_controller    # I've been needing to rebuild to get teleop to show up sometimes
+source install/setup.bash
+ros2 launch nn_controller collect_data_launch.py
+
+# to change the output_dir, specify like:
+ros2 launch nn_controller collect_data_launch.py output_dir:=/path/to/output_dir 
+
+tail -f ~/nn_data/labels.csv      # to view live data publishing
+
+# running just the node
+# ros2 run nn_controller data_collector_node --ros-args -p output_dir:=/home/penguin/session2
+
+# ================================================================================================
+# Running
+
 cd nn_ws
-source torch_env/bin/activate
-export PYTHONPATH='./torch_venv/lib/python3.12/site-packages'
-//export TURTLEBOT3_MODEL=burger (done in launch code)
-//source install/local_setup.bash (use setup.bash below instead)
+source torch_venv/bin/activate
+    # export PYTHONPATH='./torch_venv/lib/python3.12/site-packages' (launch file prepends this)
+    # export TURTLEBOT3_MODEL=waffle_pi (done in launch code, waffle_pi has a camera) 
+    # source install/local_setup.bash (use setup.bash below instead)
 source install/setup.bash
 ros2 launch nn_controller nn_bot_launch.py
+
+# to specify model path
+ros2 launch nn_controller nn_bot_launch.py model_path:=/path/to/resnet50_model.pth
