@@ -2,4 +2,6 @@ resnet50_model.pth
 *.pyc
 torch_venv/*
 log/*
-install/
+install/*
+build/*
+
