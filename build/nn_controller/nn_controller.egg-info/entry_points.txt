@@ -1,3 +1,0 @@
-[console_scripts]
-data_collector_node = nn_controller.data_collector_node:main
-nn_controller_node = nn_controller.nn_controller_node:main
