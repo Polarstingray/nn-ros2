@@ -7,6 +7,12 @@ from ament_index_python.packages import get_package_share_directory
 import os
 
 def generate_launch_description():
+    # TURTLEBOT3_MODEL must be set in the shell before launching because
+    # spawn_turtlebot3.launch.py reads os.environ at parse time, before
+    # SetEnvironmentVariable actions execute.
+    import os as _os
+    _os.environ.setdefault('TURTLEBOT3_MODEL', 'waffle_pi')
+
     gz_ip = SetEnvironmentVariable(name='GZ_IP', value='127.0.0.1')  # force gz-transport over loopback
     bot   = SetEnvironmentVariable(name='TURTLEBOT3_MODEL', value='waffle_pi')
 
